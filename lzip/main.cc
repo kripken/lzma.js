@@ -163,66 +163,11 @@ const char * format_num( long long num ) throw()
 }
 
 
-int extension_index( const std::string & name ) throw()
-{
-  for( int i = 0; known_extensions[i].from; ++i )
-  {
-    const std::string ext( known_extensions[i].from );
-    if( name.size() > ext.size() &&
-        name.compare( name.size() - ext.size(), ext.size(), ext ) == 0 )
-      return i;
-  }
-  return -1;
-}
-
-
-int open_instream( const std::string & name, struct stat * const in_statsp,
-                   const Mode program_mode, const int eindex,
-                   const bool recompress, const bool to_stdout ) throw()
-{
-  int infd = -1;
-  if( program_mode == m_compress && !recompress && eindex >= 0 )
-  {
-    if( verbosity >= 0 )
-      std::fprintf( stderr, "%s: Input file `%s' already has `%s' suffix.\n",
-                    program_name, name.c_str(),
-                    known_extensions[eindex].from );
-  }
-  else
-  {
-    infd = open( name.c_str(), O_RDONLY | o_binary );
-    if( infd < 0 )
-    {
-      if( verbosity >= 0 )
-        std::fprintf( stderr, "%s: Can't open input file `%s': %s.\n",
-                      program_name, name.c_str(), std::strerror( errno ) );
-    }
-    else
-    {
-      const int i = fstat( infd, in_statsp );
-      const mode_t & mode = in_statsp->st_mode;
-      const bool can_read = ( i == 0 &&
-                              ( S_ISBLK( mode ) || S_ISCHR( mode ) ||
-                                S_ISFIFO( mode ) || S_ISSOCK( mode ) ) );
-      if( i != 0 || ( !S_ISREG( mode ) && ( !to_stdout || !can_read ) ) )
-      {
-        if( verbosity >= 0 )
-          std::fprintf( stderr, "%s: Input file `%s' is not a regular file%s.\n",
-                        program_name, name.c_str(),
-                        ( can_read && !to_stdout ) ?
-                        " and `--stdout' was not specified" : "" );
-        close( infd );
-        infd = -1;
-      }
-    }
-  }
-  return infd;
-}
-
 bool open_outstream( const bool force ) throw()
 { 
   return false;
 }
+
 
 bool check_tty( const int infd, const Mode program_mode ) throw()
 {
@@ -421,34 +366,6 @@ unsigned char xdigit( const int value ) throw()
 }
 
 
-void show_trailing_garbage( const uint8_t * const data, const int size,
-                            const bool all ) throw()
-{
-  std::string garbage_msg;
-  if( !all ) garbage_msg = "first bytes of ";
-  garbage_msg += "trailing garbage found = ";
-  bool text = true;
-  for( int i = 0; i < size; ++i )
-    if( !std::isprint( data[i] ) ) { text = false; break; }
-  if( text )
-  {
-    garbage_msg += '`';
-    garbage_msg.append( (const char *)data, size );
-    garbage_msg += '\'';
-  }
-  else 
-  {
-    for( int i = 0; i < size; ++i )
-    {
-      if( i > 0 ) garbage_msg += ' ';
-      garbage_msg += xdigit( data[i] >> 4 );
-      garbage_msg += xdigit( data[i] & 0x0F );
-    }
-  }
-  pp( garbage_msg.c_str() );
-}
-
-
 int decompress( const int infd, const bool testing )
 {
   int retval = 0;
@@ -467,16 +384,12 @@ int decompress( const int infd, const bool testing )
       {
         if( first_member )
         { pp( "Error reading member header" ); retval = 1; }
-        else if( verbosity >= 4 && size > 0 )
-          show_trailing_garbage( header.data, size, true );
         break;
       }
       if( !header.verify_magic() )
       {
         if( first_member )
         { pp( "Bad magic number (file not in lzip format)" ); retval = 2; }
-        else if( verbosity >= 4 )
-          show_trailing_garbage( header.data, size, false );
         break;
       }
       if( !header.verify_version() )

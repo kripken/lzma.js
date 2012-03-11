@@ -285,3 +285,7 @@ void internal_error( const char * const msg );
 // defined in decoder.cc
 int readblock( const int fd, uint8_t * const buf, const int size ) throw();
 int writeblock( const int fd, const uint8_t * const buf, const int size ) throw();
+
+// XXX
+extern void pp(const char *p=NULL);
+

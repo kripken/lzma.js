@@ -117,7 +117,7 @@ void LZ_decoder::flush_data()
   }
 
 
-bool LZ_decoder::verify_trailer( const Pretty_print & pp ) const
+bool LZ_decoder::verify_trailer() const
   {
   File_trailer trailer;
   const int trailer_size = File_trailer::size( member_version );
@@ -131,12 +131,6 @@ bool LZ_decoder::verify_trailer( const Pretty_print & pp ) const
     else
       {
       error = true;
-      if( pp.verbosity() >= 0 )
-        {
-        pp();
-        std::fprintf( stderr, "Trailer truncated at trailer position %d;"
-                              " some checks may fail.\n", i );
-        }
       for( ; i < trailer_size; ++i ) trailer.data[i] = 0;
       }
     }
@@ -149,49 +143,22 @@ bool LZ_decoder::verify_trailer( const Pretty_print & pp ) const
   if( trailer.data_crc() != crc() )
     {
     error = true;
-    if( pp.verbosity() >= 0 )
-      {
-      pp();
-      std::fprintf( stderr, "CRC mismatch; trailer says %08X, data CRC is %08X.\n",
-                    (unsigned int)trailer.data_crc(), (unsigned int)crc() );
-      }
     }
   if( trailer.data_size() != data_position() )
     {
     error = true;
-    if( pp.verbosity() >= 0 )
-      {
-      pp();
-      std::fprintf( stderr, "Data size mismatch; trailer says %lld, data size is %lld (0x%llX).\n",
-                    trailer.data_size(), data_position(), data_position() );
-      }
     }
   if( trailer.member_size() != member_size )
     {
     error = true;
-    if( pp.verbosity() >= 0 )
-      {
-      pp();
-      std::fprintf( stderr, "Member size mismatch; trailer says %lld, member size is %lld (0x%llX).\n",
-                    trailer.member_size(), member_size, member_size );
-      }
     }
-  if( !error && pp.verbosity() >= 3 && data_position() > 0 && member_size > 0 )
-    std::fprintf( stderr, "%6.3f:1, %6.3f bits/byte, %5.2f%% saved.  ",
-                  (double)data_position() / member_size,
-                  ( 8.0 * member_size ) / data_position(),
-                  100.0 * ( 1.0 - ( (double)member_size / data_position() ) ) );
-  if( !error && pp.verbosity() >= 4 )
-    std::fprintf( stderr, "data CRC %08X, data size %9lld, member size %8lld.  ",
-                  (unsigned int)trailer.data_crc(), trailer.data_size(),
-                  trailer.member_size() );
   return !error;
   }
 
 
 // Return value: 0 = OK, 1 = decoder error, 2 = unexpected EOF,
 //               3 = trailer error, 4 = unknown marker found.
-int LZ_decoder::decode_member( const Pretty_print & pp )
+int LZ_decoder::decode_member()
   {
   Bit_model bm_match[State::states][pos_states];
   Bit_model bm_rep[State::states];
@@ -283,16 +250,11 @@ int LZ_decoder::decode_member( const Pretty_print & pp )
               flush_data();
               if( len == min_match_len )	// End Of Stream marker
                 {
-                if( verify_trailer( pp ) ) return 0; else return 3;
+                if( verify_trailer() ) return 0; else return 3;
                 }
               if( len == min_match_len + 1 )	// Sync Flush marker
                 {
                 range_decoder.load(); continue;
-                }
-              if( pp.verbosity() >= 0 )
-                {
-                pp();
-                std::fprintf( stderr, "Unsupported marker code `%d'.\n", len );
                 }
               return 4;
               }

@@ -4,7 +4,7 @@ cd lzip
 #make lzip -j 2 # native build
 #mv lzip ../lzma-native
 
-#make clean
+make clean
 ~/Dev/emscripten/emmake make lzip -j 2 # bitcode build
 mv lzip lzip.bc
  

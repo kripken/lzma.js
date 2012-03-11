@@ -204,7 +204,7 @@ class LZ_decoder
   Range_decoder & range_decoder;
 
   void flush_data();
-  bool verify_trailer( const Pretty_print & pp ) const;
+  bool verify_trailer() const;
 
   uint8_t get_prev_byte() const throw()
     {
@@ -264,5 +264,5 @@ public:
   long long data_position() const throw()
     { return partial_data_pos + pos; }
 
-  int decode_member( const Pretty_print & pp );
+  int decode_member();
   };

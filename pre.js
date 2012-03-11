@@ -1,4 +1,5 @@
 
+// This is lzma.js, powered by lzip. Source code at https://github.com/kripken/lzma.js
 var LZMA = {
   run: function(data, decompress) {
     var inputIndex = 0;

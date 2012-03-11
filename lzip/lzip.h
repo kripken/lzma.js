@@ -105,43 +105,6 @@ struct Bit_model
   };
 
 
-class Pretty_print
-  {
-  const char * const stdin_name;
-  unsigned int longest_name;
-  const int verbosity_;
-  std::string name_;
-  mutable bool first_post;
-
-public:
-  Pretty_print( const std::vector< std::string > & filenames, const int v )
-    : stdin_name( "(stdin)" ), longest_name( 0 ), verbosity_( v ),
-      first_post( false )
-    {
-    const unsigned int stdin_name_len = std::strlen( stdin_name );
-    for( unsigned int i = 0; i < filenames.size(); ++i )
-      {
-      const std::string & s = filenames[i];
-      const unsigned int len = ( ( s == "-" ) ? stdin_name_len : s.size() );
-      if( len > longest_name ) longest_name = len;
-      }
-    if( longest_name == 0 ) longest_name = stdin_name_len;
-    }
-
-  void set_name( const std::string & filename )
-    {
-    if( filename.size() && filename != "-" ) name_ = filename;
-    else name_ = stdin_name;
-    first_post = true;
-    }
-
-  void reset() const throw() { if( name_.size() ) first_post = true; }
-  const char * name() const throw() { return name_.c_str(); }
-  int verbosity() const throw() { return verbosity_; }
-  void operator()( const char * const msg = 0 ) const throw();
-  };
-
-
 class CRC32
   {
   uint32_t data[256];		// Table of CRCs of all 8-bit messages.

@@ -22,7 +22,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <string>
 #include <vector>
 #include <stdint.h>
 #include <unistd.h>
@@ -32,23 +31,6 @@
 
 
 const CRC32 crc32;
-
-
-void Pretty_print::operator()( const char * const msg ) const throw()
-  {
-  if( verbosity_ >= 0 )
-    {
-    if( first_post )
-      {
-      first_post = false;
-      std::fprintf( stderr, "  %s: ", name_.c_str() );
-      for( unsigned int i = 0; i < longest_name - name_.size(); ++i )
-        std::fprintf( stderr, " " );
-      if( !msg ) std::fflush( stderr );
-      }
-    if( msg ) std::fprintf( stderr, "%s.\n", msg );
-    }
-  }
 
 
 // Returns the number of bytes really read.

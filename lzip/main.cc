@@ -357,14 +357,6 @@ int fcompress( const long long member_size, const long long volume_size,
 }
 
 
-unsigned char xdigit( const int value ) throw()
-{
-  if( value >= 0 && value <= 9 ) return '0' + value;
-  if( value >= 10 && value <= 15 ) return 'A' + value - 10;
-  return 0;
-}
-
-
 int decompress( const int infd, const bool testing )
 {
   int retval = 0;

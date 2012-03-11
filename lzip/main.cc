@@ -906,7 +906,7 @@ int main( const int argc, const char * const argv[] )
     else
       tmp = decompress( infd, pp, program_mode == m_test );
     if( tmp > retval ) retval = tmp;
-    if( tmp && program_mode != m_test ) cleanup_and_fail( retval );
+    //if( tmp && program_mode != m_test ) cleanup_and_fail( retval );
 
     if( delete_output_on_interrupt )
       close_and_set_permissions( in_statsp );

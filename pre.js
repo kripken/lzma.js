@@ -6,7 +6,7 @@ var LZMA = {
     var Module = {
       arguments: ['-q'].concat(decompress ? ['-d'] : []),
       stdin: function() { return inputIndex < data.length ? data[inputIndex++] : null },
-      stdout: function(x) { returnValue.push(x) }
+      stdout: function(x) { if (x !== null) returnValue.push(x) }
     };
 
 

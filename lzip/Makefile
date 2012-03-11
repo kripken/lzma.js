@@ -27,9 +27,9 @@ INSTALL_DATA = $(INSTALL) -p -m 644
 INSTALL_DIR = $(INSTALL) -d -m 755
 SHELL = /bin/sh
 
-objs = arg_parser.o decoder.o encoder.o fast_encoder.o main.o
-recobjs = arg_parser.o decoder.o lziprecover.o
-unzobjs = arg_parser.o unzcrash.o
+objs = decoder.o encoder.o fast_encoder.o main.o
+recobjs = decoder.o lziprecover.o
+unzobjs = unzcrash.o
 
 
 .PHONY : all install install-info install-man install-strip \
@@ -63,13 +63,12 @@ unzcrash.o : testsuite/unzcrash.cc
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 $(objs)        : Makefile
-arg_parser.o   : arg_parser.h
 decoder.o      : lzip.h decoder.h
 encoder.o      : lzip.h encoder.h
 fast_encoder.o : lzip.h encoder.h fast_encoder.h
-main.o         : arg_parser.h lzip.h decoder.h encoder.h fast_encoder.h
-lziprecover.o  : arg_parser.h lzip.h decoder.h Makefile
-unzcrash.o     : arg_parser.h Makefile
+main.o         : lzip.h decoder.h encoder.h fast_encoder.h
+lziprecover.o  : lzip.h decoder.h Makefile
+unzcrash.o     : Makefile
 
 
 doc : info man

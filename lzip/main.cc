@@ -52,7 +52,6 @@
 #include <io.h>
 #endif
 
-#include "arg_parser.h"
 #include "lzip.h"
 #include "decoder.h"
 #include "encoder.h"
@@ -109,6 +108,7 @@ bool delete_output_on_interrupt = false;
 void show_help() throw()
   {
   std::printf( "%s - Data compressor based on the LZMA algorithm.\n", Program_name );
+  std::printf( "<< Most of these are unsupported. Compressing/decompressing from stdin to stdout is the right way! >>\n" );
   std::printf( "\nUsage: %s [options] [files]\n", invocation_name );
   std::printf( "\nOptions:\n" );
   std::printf( "  -h, --help                 display this help and exit\n" );
@@ -161,72 +161,6 @@ const char * format_num( long long num ) throw()
     { num /= factor; p = prefix[i]; }
   snprintf( buf, buf_size, "%lld %s", num, p );
   return buf;
-  }
-
-
-long long getnum( const char * const ptr,
-                  const long long llimit = LLONG_MIN + 1,
-                  const long long ulimit = LLONG_MAX ) throw()
-  {
-  errno = 0;
-  char *tail;
-  long long result = strtoll( ptr, &tail, 0 );
-  if( tail == ptr )
-    {
-    show_error( "Bad or missing numerical argument.", 0, true );
-    std::exit( 1 );
-    }
-
-  if( !errno && tail[0] )
-    {
-    int factor = ( tail[1] == 'i' ) ? 1024 : 1000;
-    int exponent = 0;
-    bool bad_multiplier = false;
-    switch( tail[0] )
-      {
-      case ' ': break;
-      case 'Y': exponent = 8; break;
-      case 'Z': exponent = 7; break;
-      case 'E': exponent = 6; break;
-      case 'P': exponent = 5; break;
-      case 'T': exponent = 4; break;
-      case 'G': exponent = 3; break;
-      case 'M': exponent = 2; break;
-      case 'K': if( factor == 1024 ) exponent = 1; else bad_multiplier = true;
-                break;
-      case 'k': if( factor == 1000 ) exponent = 1; else bad_multiplier = true;
-                break;
-      default : bad_multiplier = true;
-      }
-    if( bad_multiplier )
-      {
-      show_error( "Bad multiplier in numerical argument.", 0, true );
-      std::exit( 1 );
-      }
-    for( int i = 0; i < exponent; ++i )
-      {
-      if( LLONG_MAX / factor >= llabs( result ) ) result *= factor;
-      else { errno = ERANGE; break; }
-      }
-    }
-  if( !errno && ( result < llimit || result > ulimit ) ) errno = ERANGE;
-  if( errno )
-    {
-    show_error( "Numerical argument out of limits." );
-    std::exit( 1 );
-    }
-  return result;
-  }
-
-
-int get_dict_size( const char * const arg ) throw()
-  {
-  char *tail;
-  int bits = std::strtol( arg, &tail, 0 );
-  if( bits >= min_dictionary_bits &&
-      bits <= max_dictionary_bits && *tail == 0 )
-    return ( 1 << bits );
-  return getnum( arg, min_dictionary_size, max_dictionary_size );
   }
 
 
@@ -737,70 +671,19 @@ int main( const int argc, const char * const argv[] )
   std::vector< std::string > filenames;
   invocation_name = argv[0];
 
-  const Arg_parser::Option options[] =
+  // Greatly simplified argument parsing
+  int argind = 1;
+  for( ; argind < argc; ++argind )
     {
-    { '0', "fast",            Arg_parser::no  },
-    { '1',  0,                Arg_parser::no  },
-    { '2',  0,                Arg_parser::no  },
-    { '3',  0,                Arg_parser::no  },
-    { '4',  0,                Arg_parser::no  },
-    { '5',  0,                Arg_parser::no  },
-    { '6',  0,                Arg_parser::no  },
-    { '7',  0,                Arg_parser::no  },
-    { '8',  0,                Arg_parser::no  },
-    { '9', "best",            Arg_parser::no  },
-    { 'b', "member-size",     Arg_parser::yes },
-    { 'c', "stdout",          Arg_parser::no  },
-    { 'd', "decompress",      Arg_parser::no  },
-    { 'e', "extreme",         Arg_parser::no  },
-    { 'f', "force",           Arg_parser::no  },
-    { 'F', "recompress",      Arg_parser::no  },
-    { 'h', "help",            Arg_parser::no  },
-    { 'k', "keep",            Arg_parser::no  },
-    { 'm', "match-length",    Arg_parser::yes },
-    { 'o', "output",          Arg_parser::yes },
-    { 'q', "quiet",           Arg_parser::no  },
-    { 's', "dictionary-size", Arg_parser::yes },
-    { 'S', "volume-size",     Arg_parser::yes },
-    { 't', "test",            Arg_parser::no  },
-    { 'v', "verbose",         Arg_parser::no  },
-    { 'V', "version",         Arg_parser::no  },
-    {  0 ,  0,                Arg_parser::no  } };
-
-  const Arg_parser parser( argc, argv, options );
-  if( parser.error().size() )				// bad option
-    { show_error( parser.error().c_str(), 0, true ); return 1; }
-
-  int argind = 0;
-  for( ; argind < parser.arguments(); ++argind )
-    {
-    const int code = parser.code( argind );
-    if( !code ) break;					// no more options
-    const char * const arg = parser.argument( argind ).c_str();
+    const int code = argv[argind][1];
     switch( code )
       {
-      case '0': zero = true; break;
-      case '1': case '2': case '3': case '4':
-      case '5': case '6': case '7': case '8': case '9':
-                zero = false;
-                encoder_options = option_mapping[code-'0']; break;
-      case 'b': member_size = getnum( arg, 100000, LLONG_MAX / 2 ); break;
       case 'c': to_stdout = true; break;
       case 'd': program_mode = m_decompress; break;
-      case 'e': break;				// ignored by now
-      case 'f': force = true; break;
-      case 'F': recompress = true; break;
       case 'h': show_help(); return 0;
       case 'k': keep_input_files = true; break;
-      case 'm': encoder_options.match_len_limit =
-                  getnum( arg, min_match_len_limit, max_match_len );
-                zero = false; break;
-      case 'o': default_output_filename = arg; break;
       case 'q': verbosity = -1; break;
-      case 's': encoder_options.dictionary_size = get_dict_size( arg );
                 zero = false; break;
-      case 'S': volume_size = getnum( arg, 100000, LLONG_MAX / 2 ); break;
-      case 't': program_mode = m_test; break;
       case 'v': if( verbosity < 4 ) ++verbosity; break;
       case 'V': show_version(); return 0;
       default : internal_error( "uncaught option" );
@@ -813,11 +696,6 @@ int main( const int argc, const char * const argv[] )
 #endif
 
   bool filenames_given = false;
-  for( ; argind < parser.arguments(); ++argind )
-    {
-    if( parser.argument( argind ) != "-" ) filenames_given = true;
-    filenames.push_back( parser.argument( argind ) );
-    }
 
   if( filenames.empty() ) filenames.push_back("-");
   if( !to_stdout && program_mode != m_test &&

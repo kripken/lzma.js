@@ -15,4 +15,10 @@ whichever you want in either location.
 Usage
 -----
 
+LZMA.compress(data) receives an array of 8-bit data and returns an
+    array of compressed data.
+
+LZMA.decompress(data) receives an array of compressed 8-bit data and
+    returns an array of decompressed data.
+
 

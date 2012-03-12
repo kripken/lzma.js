@@ -1,18 +1,20 @@
 cd lzip
 
-#echo "native"
-#make clean
-#DECODER_ONLY=0 make lzip -j 2 # native build
-#mv lzip ../lzma-native
+echo "native"
+make clean
+DECODER_ONLY=0 make lzip -j 4 # native build
+mv lzip ../lzma-native
+
+exit
 
 echo "bitcode full (encoder+decoder)"
 make clean
-DECODER_ONLY=0 ~/Dev/emscripten/emmake make lzip -j 2
+DECODER_ONLY=0 ~/Dev/emscripten/emmake make lzip -j 4
 mv lzip lzip-full.bc
 
 echo "bitcode decoder only"
 make clean
-DECODER_ONLY=1 ~/Dev/emscripten/emmake make lzip -j 2
+DECODER_ONLY=1 ~/Dev/emscripten/emmake make lzip -j 4
 mv lzip lzip-decoder.bc
  
 cd ..

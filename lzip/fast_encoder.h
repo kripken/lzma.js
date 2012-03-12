@@ -44,7 +44,7 @@ public:
   Fmatchfinder( const int ifd );
 
   ~Fmatchfinder()
-    { delete[] prev_pos_chain; delete[] prev_positions; std::free( buffer ); }
+    { delete[] prev_pos_chain; delete[] prev_positions; free( buffer ); }
 
   uint8_t operator[]( const int i ) const throw() { return buffer[pos+i]; }
   int available_bytes() const throw() { return stream_pos - pos; }

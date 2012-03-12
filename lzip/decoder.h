@@ -229,9 +229,9 @@ class LZ_decoder
     {
     int i = pos - distance - 1;
     if( i < 0 ) i += buffer_size;
-    if( len < buffer_size - std::max( pos, i ) && len <= std::abs( pos - i ) )
+    if( len < buffer_size - max( pos, i ) && len <= abs( pos - i ) )
       {
-      std::memcpy( buffer + pos, buffer + i, len );
+      memcpy( buffer + pos, buffer + i, len );
       pos += len;
       }
     else for( ; len > 0; --len )
@@ -247,7 +247,7 @@ public:
     :
     partial_data_pos( 0 ),
     dictionary_size( header.dictionary_size() ),
-    buffer_size( std::max( 65536, dictionary_size ) ),
+    buffer_size( max( 65536, dictionary_size ) ),
     buffer( new uint8_t[buffer_size] ),
     pos( 0 ),
     stream_pos( 0 ),

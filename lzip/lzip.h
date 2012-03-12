@@ -1,3 +1,13 @@
+#define max(a,b) \
+  ({ __typeof__ (a) _a = (a); \
+      __typeof__ (b) _b = (b); \
+    _a > _b ? _a : _b; })
+
+#define min(a,b) \
+  ({ __typeof__ (a) _a = (a); \
+      __typeof__ (b) _b = (b); \
+    _a < _b ? _a : _b; })
+
 /*  Lzip - Data compressor based on the LZMA algorithm
     Copyright (C) 2008, 2009, 2010, 2011 Antonio Diaz Diaz.
 
@@ -152,10 +162,10 @@ struct File_header
   enum { size = 6 };
 
   void set_magic() throw()
-    { std::memcpy( data, magic_string, 4 ); data[4] = 1; }
+    { memcpy( data, magic_string, 4 ); data[4] = 1; }
 
   bool verify_magic() const throw()
-    { return ( std::memcmp( data, magic_string, 4 ) == 0 ); }
+    { return ( memcmp( data, magic_string, 4 ) == 0 ); }
 
   uint8_t version() const throw() { return data[4]; }
   bool verify_version() const throw() { return ( data[4] <= 1 ); }

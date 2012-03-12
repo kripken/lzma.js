@@ -17,12 +17,10 @@
 
 #define _FILE_OFFSET_BITS 64
 
-#include <algorithm>
-#include <cerrno>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <vector>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <stdint.h>
 #include <unistd.h>
 

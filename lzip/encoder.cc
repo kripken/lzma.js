@@ -19,11 +19,9 @@
 
 #define _FILE_OFFSET_BITS 64
 
-#include <algorithm>
-#include <cerrno>
-#include <cstdlib>
-#include <cstring>
-#include <vector>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 #include <stdint.h>
 
 #include "lzip.h"
@@ -62,18 +60,18 @@ Matchfinder::Matchfinder( const int dict_size, const int len_limit,
   at_stream_end( false )
   {
   const int buffer_size_limit = ( 2 * dict_size ) + before_size + after_size;
-  buffer_size = std::max( 65536, dict_size );
-  buffer = (uint8_t *)std::malloc( buffer_size );
-  if( !buffer ) throw std::bad_alloc();
+  buffer_size = max( 65536, dict_size );
+  buffer = (uint8_t *)malloc( buffer_size );
+  if( !buffer ) exit(-1);
   if( read_block() && !at_stream_end && buffer_size < buffer_size_limit )
     {
     buffer_size = buffer_size_limit;
-    buffer = (uint8_t *)std::realloc( buffer, buffer_size );
-    if( !buffer ) throw std::bad_alloc();
+    buffer = (uint8_t *)realloc( buffer, buffer_size );
+    if( !buffer ) exit(-1);
     read_block();
     }
   if( at_stream_end && stream_pos < dict_size )
-    dictionary_size_ = std::max( (int)min_dictionary_size, stream_pos );
+    dictionary_size_ = max( (int)min_dictionary_size, stream_pos );
   else dictionary_size_ = dict_size;
   pos_limit = buffer_size;
   if( !at_stream_end ) pos_limit -= after_size;
@@ -85,7 +83,7 @@ Matchfinder::Matchfinder( const int dict_size, const int len_limit,
 void Matchfinder::reset()
   {
   const int size = stream_pos - pos;
-  if( size > 0 ) std::memmove( buffer, buffer + pos, size );
+  if( size > 0 ) memmove( buffer, buffer + pos, size );
   partial_data_pos = 0;
   stream_pos -= pos;
   pos = 0;
@@ -106,7 +104,7 @@ void Matchfinder::move_pos()
       {
       const int offset = pos - dictionary_size_ - before_size;
       const int size = stream_pos - offset;
-      std::memmove( buffer, buffer + offset, size );
+      memmove( buffer, buffer + offset, size );
       partial_data_pos += offset;
       pos -= offset;
       stream_pos -= offset;
@@ -448,7 +446,7 @@ int LZ_encoder::sequence_optimizer( const int reps[num_rep_distances],
       next_trial.update( 0, cur, rep_match_price +
                                  price_rep_len1( cur_trial.state, pos_state ) );
 
-    const int len_limit = std::min( std::min( max_num_trials - 1 - cur,
+    const int len_limit = min( min( max_num_trials - 1 - cur,
               matchfinder.available_bytes() ), matchfinder.match_len_limit() );
     if( len_limit < min_match_len ) continue;
 

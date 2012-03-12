@@ -23,13 +23,11 @@
 
 #define _FILE_OFFSET_BITS 64
 
-#include <algorithm>
-#include <cerrno>
-#include <climits>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <vector>
+#include <errno.h>
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <fcntl.h>
 #include <stdint.h>
 #include <unistd.h>
@@ -108,44 +106,44 @@ bool delete_output_on_interrupt = false;
 
 void show_help() throw()
 {
-  std::printf( "%s - Data compressor based on the LZMA algorithm.\n", Program_name );
-  std::printf( "<< Most of these are unsupported. Compressing/decompressing from stdin to stdout is the right way! >>\n" );
-  std::printf( "\nUsage: %s [options] [files]\n", invocation_name );
-  std::printf( "\nOptions:\n" );
-  std::printf( "  -h, --help                 display this help and exit\n" );
-  std::printf( "  -V, --version              output version information and exit\n" );
-  std::printf( "  -b, --member-size=<n>      set member size limit in bytes\n" );
-  std::printf( "  -c, --stdout               send output to standard output\n" );
-  std::printf( "  -d, --decompress           decompress\n" );
-  std::printf( "  -f, --force                overwrite existing output files\n" );
-  std::printf( "  -F, --recompress           force recompression of compressed files\n" );
-  std::printf( "  -k, --keep                 keep (don't delete) input files\n" );
-  std::printf( "  -m, --match-length=<n>     set match length limit in bytes [36]\n" );
-  std::printf( "  -o, --output=<file>        if reading stdin, place the output into <file>\n" );
-  std::printf( "  -q, --quiet                suppress all messages\n" );
-  std::printf( "  -s, --dictionary-size=<n>  set dictionary size limit in bytes [8MiB]\n" );
-  std::printf( "  -S, --volume-size=<n>      set volume size limit in bytes\n" );
-  std::printf( "  -t, --test                 test compressed file integrity\n" );
-  std::printf( "  -v, --verbose              be verbose (a 2nd -v gives more)\n" );
-  std::printf( "  -0 .. -9                   set compression level [default 6]\n" );
-  std::printf( "      --fast                 alias for -0\n" );
-  std::printf( "      --best                 alias for -9\n" );
-  std::printf( "If no file names are given, %s compresses or decompresses\n", program_name );
-  std::printf( "from standard input to standard output.\n" );
-  std::printf( "Numbers may be followed by a multiplier: k = kB = 10^3 = 1000,\n" );
-  std::printf( "Ki = KiB = 2^10 = 1024, M = 10^6, Mi = 2^20, G = 10^9, Gi = 2^30, etc...\n" );
-  std::printf( "\nReport bugs to lzip-bug@nongnu.org\n" );
-  std::printf( "Lzip home page: http://www.nongnu.org/lzip/lzip.html\n" );
+  printf( "%s - Data compressor based on the LZMA algorithm.\n", Program_name );
+  printf( "<< Most of these are unsupported. Compressing/decompressing from stdin to stdout is the right way! >>\n" );
+  printf( "\nUsage: %s [options] [files]\n", invocation_name );
+  printf( "\nOptions:\n" );
+  printf( "  -h, --help                 display this help and exit\n" );
+  printf( "  -V, --version              output version information and exit\n" );
+  printf( "  -b, --member-size=<n>      set member size limit in bytes\n" );
+  printf( "  -c, --stdout               send output to standard output\n" );
+  printf( "  -d, --decompress           decompress\n" );
+  printf( "  -f, --force                overwrite existing output files\n" );
+  printf( "  -F, --recompress           force recompression of compressed files\n" );
+  printf( "  -k, --keep                 keep (don't delete) input files\n" );
+  printf( "  -m, --match-length=<n>     set match length limit in bytes [36]\n" );
+  printf( "  -o, --output=<file>        if reading stdin, place the output into <file>\n" );
+  printf( "  -q, --quiet                suppress all messages\n" );
+  printf( "  -s, --dictionary-size=<n>  set dictionary size limit in bytes [8MiB]\n" );
+  printf( "  -S, --volume-size=<n>      set volume size limit in bytes\n" );
+  printf( "  -t, --test                 test compressed file integrity\n" );
+  printf( "  -v, --verbose              be verbose (a 2nd -v gives more)\n" );
+  printf( "  -0 .. -9                   set compression level [default 6]\n" );
+  printf( "      --fast                 alias for -0\n" );
+  printf( "      --best                 alias for -9\n" );
+  printf( "If no file names are given, %s compresses or decompresses\n", program_name );
+  printf( "from standard input to standard output.\n" );
+  printf( "Numbers may be followed by a multiplier: k = kB = 10^3 = 1000,\n" );
+  printf( "Ki = KiB = 2^10 = 1024, M = 10^6, Mi = 2^20, G = 10^9, Gi = 2^30, etc...\n" );
+  printf( "\nReport bugs to lzip-bug@nongnu.org\n" );
+  printf( "Lzip home page: http://www.nongnu.org/lzip/lzip.html\n" );
 }
 
 
 void show_version() throw()
 {
-  std::printf( "%s %s\n", Program_name, PROGVERSION );
-  std::printf( "Copyright (C) %s Antonio Diaz Diaz.\n", program_year );
-  std::printf( "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n" );
-  std::printf( "This is free software: you are free to change and redistribute it.\n" );
-  std::printf( "There is NO WARRANTY, to the extent permitted by law.\n" );
+  printf( "%s %s\n", Program_name, PROGVERSION );
+  printf( "Copyright (C) %s Antonio Diaz Diaz.\n", program_year );
+  printf( "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n" );
+  printf( "This is free software: you are free to change and redistribute it.\n" );
+  printf( "There is NO WARRANTY, to the extent permitted by law.\n" );
 }
 
 
@@ -190,7 +188,7 @@ bool check_tty( const int infd, const Mode program_mode ) throw()
 
 void cleanup_and_fail( const int retval ) throw()
 {
-  std::exit( retval );
+  exit( retval );
 }
 
 
@@ -253,7 +251,7 @@ int compress( const long long member_size, const long long volume_size,
     {
       LZ_encoder encoder( matchfinder, header, outfd );
       const long long size =
-        std::min( member_size, volume_size - partial_volume_size );
+        min( member_size, volume_size - partial_volume_size );
       if( !encoder.encode_member( size ) )
       { pp( "Encoder error" ); retval = 1; break; }
       in_size += matchfinder.data_position();
@@ -278,20 +276,15 @@ int compress( const long long member_size, const long long volume_size,
     if( retval == 0 && verbosity >= 1 )
     {
       if( in_size <= 0 || out_size <= 0 )
-        std::fprintf( stderr, "No data compressed.\n" );
+        fprintf( stderr, "No data compressed.\n" );
       else
-        std::fprintf( stderr, "%6.3f:1, %6.3f bits/byte, "
+        fprintf( stderr, "%6.3f:1, %6.3f bits/byte, "
                               "%5.2f%% saved, %lld in, %lld out.\n",
                       (double)in_size / out_size,
                       ( 8.0 * out_size ) / in_size,
                       100.0 * ( 1.0 - ( (double)out_size / in_size ) ),
                       in_size, out_size );
     }
-  }
-  catch( std::bad_alloc )
-  {
-    pp( "Not enough memory. Try a smaller dictionary size" );
-    retval = 1;
   }
   catch( Error e ) { pp(); show_error( e.msg, errno ); retval = 1; }
   return retval;
@@ -316,7 +309,7 @@ int fcompress( const long long member_size, const long long volume_size,
     {
       FLZ_encoder encoder( fmatchfinder, header, outfd );
       const long long size =
-        std::min( member_size, volume_size - partial_volume_size );
+        min( member_size, volume_size - partial_volume_size );
       if( !encoder.encode_member( size ) )
       { pp( "Encoder error" ); retval = 1; break; }
       in_size += fmatchfinder.data_position();
@@ -341,20 +334,15 @@ int fcompress( const long long member_size, const long long volume_size,
     if( retval == 0 && verbosity >= 1 )
     {
       if( in_size <= 0 || out_size <= 0 )
-        std::fprintf( stderr, "No data compressed.\n" );
+        fprintf( stderr, "No data compressed.\n" );
       else
-        std::fprintf( stderr, "%6.3f:1, %6.3f bits/byte, "
+        fprintf( stderr, "%6.3f:1, %6.3f bits/byte, "
                               "%5.2f%% saved, %lld in, %lld out.\n",
                       (double)in_size / out_size,
                       ( 8.0 * out_size ) / in_size,
                       100.0 * ( 1.0 - ( (double)out_size / in_size ) ),
                       in_size, out_size );
     }
-  }
-  catch( std::bad_alloc )
-  {
-    pp( "Not enough memory. Try a smaller dictionary size" );
-    retval = 1;
   }
   catch( Error e ) { pp(); show_error( e.msg, errno ); retval = 1; }
   return retval;
@@ -391,7 +379,7 @@ int decompress( const int infd, const bool testing )
       {
         if( verbosity >= 0 )
         { pp();
-            std::fprintf( stderr, "Version %d member format not supported.\n",
+            fprintf( stderr, "Version %d member format not supported.\n",
                           header.version() ); }
         retval = 2; break;
       }
@@ -403,7 +391,7 @@ int decompress( const int infd, const bool testing )
       {
         pp();
         if( verbosity >= 2 )
-          std::fprintf( stderr, "version %d, dictionary size %7sB.  ",
+          fprintf( stderr, "version %d, dictionary size %7sB.  ",
                         header.version(),
                         format_num( header.dictionary_size() ) );
       }
@@ -417,28 +405,23 @@ int decompress( const int infd, const bool testing )
         {
           pp();
           if( result == 2 )
-            std::fprintf( stderr, "File ends unexpectedly at pos %lld\n",
+            fprintf( stderr, "File ends unexpectedly at pos %lld\n",
                           partial_file_pos );
           else
-            std::fprintf( stderr, "Decoder error at pos %lld\n",
+            fprintf( stderr, "Decoder error at pos %lld\n",
                           partial_file_pos );
         }
         retval = 2; break;
       }
       if( verbosity >= 2 )
-      { if( testing ) std::fprintf( stderr, "ok\n" );
-          else std::fprintf( stderr, "done\n" ); }
+      { if( testing ) fprintf( stderr, "ok\n" );
+          else fprintf( stderr, "done\n" ); }
     }
-  }
-  catch( std::bad_alloc )
-  {
-    pp( "Not enough memory. Find a machine with more memory" );
-    retval = 1;
   }
   catch( Error e ) { pp(); show_error( e.msg, errno ); retval = 1; }
   if( verbosity == 1 && retval == 0 )
-  { if( testing ) std::fprintf( stderr, "ok\n" );
-      else std::fprintf( stderr, "done\n" ); }
+  { if( testing ) fprintf( stderr, "ok\n" );
+      else fprintf( stderr, "done\n" ); }
   return retval;
 }
 
@@ -452,13 +435,13 @@ void show_error( const char * const msg, const int errcode, const bool help ) th
   {
     if( msg && msg[0] )
     {
-      std::fprintf( stderr, "%s: %s", program_name, msg );
+      fprintf( stderr, "%s: %s", program_name, msg );
       if( errcode > 0 )
-        std::fprintf( stderr, ": %s", std::strerror( errcode ) );
-      std::fprintf( stderr, "\n" );
+        fprintf( stderr, ": %s", strerror( errcode ) );
+      fprintf( stderr, "\n" );
     }
     if( help && invocation_name && invocation_name[0] )
-      std::fprintf( stderr, "Try `%s --help' for more information.\n",
+      fprintf( stderr, "Try `%s --help' for more information.\n",
                     invocation_name );
   }
 }
@@ -467,8 +450,8 @@ void show_error( const char * const msg, const int errcode, const bool help ) th
 void internal_error( const char * const msg )
 {
   if( verbosity >= 0 )
-    std::fprintf( stderr, "%s: internal error: %s.\n", program_name, msg );
-  std::exit( 3 );
+    fprintf( stderr, "%s: internal error: %s.\n", program_name, msg );
+  exit( 3 );
 }
 
 

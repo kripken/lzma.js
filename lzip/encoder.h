@@ -28,8 +28,8 @@ public:
     for( int slot = 0; slot < 4; ++slot ) data[slot] = slot;
     for( int i = 4, size = 2, slot = 4; slot < 24; slot += 2 )
       {
-      std::memset( &data[i], slot, size );
-      std::memset( &data[i+size], slot + 1, size );
+      memset( &data[i], slot, size );
+      memset( &data[i+size], slot + 1, size );
       size <<= 1;
       i += size;
       }
@@ -173,7 +173,7 @@ public:
   Matchfinder( const int dict_size, const int len_limit, const int ifd );
 
   ~Matchfinder()
-    { delete[] prev_pos_tree; delete[] prev_positions; std::free( buffer ); }
+    { delete[] prev_pos_tree; delete[] prev_positions; free( buffer ); }
 
   uint8_t operator[]( const int i ) const throw() { return buffer[pos+i]; }
   int available_bytes() const throw() { return stream_pos - pos; }

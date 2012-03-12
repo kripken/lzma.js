@@ -104,7 +104,7 @@ int verbosity = 0;
 bool delete_output_on_interrupt = false;
 
 
-void show_help() throw()
+void show_help()
 {
   printf( "%s - Data compressor based on the LZMA algorithm.\n", Program_name );
   printf( "<< Most of these are unsupported. Compressing/decompressing from stdin to stdout is the right way! >>\n" );
@@ -137,7 +137,7 @@ void show_help() throw()
 }
 
 
-void show_version() throw()
+void show_version()
 {
   printf( "%s %s\n", Program_name, PROGVERSION );
   printf( "Copyright (C) %s Antonio Diaz Diaz.\n", program_year );
@@ -147,7 +147,7 @@ void show_version() throw()
 }
 
 
-const char * format_num( long long num ) throw()
+const char * format_num( long long num )
 {
   const char * const prefix[8] =
   { "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi" };
@@ -163,13 +163,13 @@ const char * format_num( long long num ) throw()
 }
 
 
-bool open_outstream( const bool force ) throw()
+bool open_outstream( const bool force )
 { 
   return false;
 }
 
 
-bool check_tty( const int infd, const Mode program_mode ) throw()
+bool check_tty( const int infd, const Mode program_mode )
 {
   if( program_mode == m_compress && outfd >= 0 && isatty( outfd ) )
   {
@@ -186,7 +186,7 @@ bool check_tty( const int infd, const Mode program_mode ) throw()
 }
 
 
-void cleanup_and_fail( const int retval ) throw()
+void cleanup_and_fail( const int retval )
 {
   exit( retval );
 }
@@ -241,7 +241,6 @@ int compress( const long long member_size, const long long volume_size,
     internal_error( "invalid argument to encoder" );
   int retval = 0;
 
-  try {
     Matchfinder matchfinder( header.dictionary_size(),
                              encoder_options.match_len_limit, infd );
     header.dictionary_size( matchfinder.dictionary_size() );
@@ -285,8 +284,6 @@ int compress( const long long member_size, const long long volume_size,
                       100.0 * ( 1.0 - ( (double)out_size / in_size ) ),
                       in_size, out_size );
     }
-  }
-  catch( Error e ) { pp(); show_error( e.msg, errno ); retval = 1; }
   return retval;
 }
 
@@ -300,7 +297,6 @@ int fcompress( const long long member_size, const long long volume_size,
   header.set_magic();
   int retval = 0;
 
-  try {
     Fmatchfinder fmatchfinder( infd );
     header.dictionary_size( fmatchfinder.dictionary_size() );
 
@@ -343,8 +339,6 @@ int fcompress( const long long member_size, const long long volume_size,
                       100.0 * ( 1.0 - ( (double)out_size / in_size ) ),
                       in_size, out_size );
     }
-  }
-  catch( Error e ) { pp(); show_error( e.msg, errno ); retval = 1; }
   return retval;
 }
 #endif
@@ -353,7 +347,6 @@ int decompress( const int infd, const bool testing )
 {
   int retval = 0;
 
-  try {
     Range_decoder rdec( infd );
     long long partial_file_pos = 0;
     for( bool first_member = true; ; first_member = false )
@@ -417,8 +410,6 @@ int decompress( const int infd, const bool testing )
       { if( testing ) fprintf( stderr, "ok\n" );
           else fprintf( stderr, "done\n" ); }
     }
-  }
-  catch( Error e ) { pp(); show_error( e.msg, errno ); retval = 1; }
   if( verbosity == 1 && retval == 0 )
   { if( testing ) fprintf( stderr, "ok\n" );
       else fprintf( stderr, "done\n" ); }
@@ -429,7 +420,7 @@ int decompress( const int infd, const bool testing )
 } // end namespace
 
 
-void show_error( const char * const msg, const int errcode, const bool help ) throw()
+void show_error( const char * const msg, const int errcode, const bool help )
 {
   if( verbosity >= 0 )
   {

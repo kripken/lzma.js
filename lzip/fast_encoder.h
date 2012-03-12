@@ -46,15 +46,15 @@ public:
   ~Fmatchfinder()
     { delete[] prev_pos_chain; delete[] prev_positions; free( buffer ); }
 
-  uint8_t operator[]( const int i ) const throw() { return buffer[pos+i]; }
-  int available_bytes() const throw() { return stream_pos - pos; }
-  long long data_position() const throw() { return partial_data_pos + pos; }
-  int dictionary_size() const throw() { return dictionary_size_; }
-  bool finished() const throw() { return at_stream_end && pos >= stream_pos; }
-  int match_len_limit() const throw() { return match_len_limit_; }
-  const uint8_t * ptr_to_current_pos() const throw() { return buffer + pos; }
+  uint8_t operator[]( const int i ) const { return buffer[pos+i]; }
+  int available_bytes() const { return stream_pos - pos; }
+  long long data_position() const { return partial_data_pos + pos; }
+  int dictionary_size() const { return dictionary_size_; }
+  bool finished() const { return at_stream_end && pos >= stream_pos; }
+  int match_len_limit() const { return match_len_limit_; }
+  const uint8_t * ptr_to_current_pos() const { return buffer + pos; }
 
-  int true_match_len( const int index, const int distance, int len_limit ) const throw()
+  int true_match_len( const int index, const int distance, int len_limit ) const
     {
     if( index + len_limit > available_bytes() )
       len_limit = available_bytes() - index;
@@ -66,8 +66,8 @@ public:
 
   void reset();
   void move_pos();
-  int longest_match_len( int * const distance ) throw();
-  void longest_match_len() throw();
+  int longest_match_len( int * const distance );
+  void longest_match_len();
   };
 
 
@@ -97,10 +97,10 @@ class FLZ_encoder
   const int num_dis_slots;
   int match_distance;
 
-  uint32_t crc() const throw() { return crc_ ^ 0xFFFFFFFFU; }
+  uint32_t crc() const { return crc_ ^ 0xFFFFFFFFU; }
 
        // move-to-front dis in/into reps
-  void mtf_reps( const int dis, int reps[num_rep_distances] ) throw()
+  void mtf_reps( const int dis, int reps[num_rep_distances] )
     {
     if( dis >= num_rep_distances )
       {
@@ -115,7 +115,7 @@ class FLZ_encoder
       }
     }
 
-  void encode_pair( const uint32_t dis, const int len, const int pos_state ) throw()
+  void encode_pair( const uint32_t dis, const int len, const int pos_state )
     {
     len_encoder.encode( range_encoder, len, pos_state );
     const int dis_slot = dis_slots[dis];
@@ -138,7 +138,7 @@ class FLZ_encoder
       }
     }
 
-  int read_match_distances() throw()
+  int read_match_distances()
     {
     int len = fmatchfinder.longest_match_len( &match_distance );
     if( len == fmatchfinder.match_len_limit() )
@@ -166,6 +166,6 @@ public:
 
   bool encode_member( const long long member_size );
 
-  long long member_position() const throw()
+  long long member_position() const
     { return range_encoder.member_position(); }
   };

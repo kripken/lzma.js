@@ -43,11 +43,11 @@ public:
 
   ~Range_decoder() { delete[] buffer; }
 
-  bool code_is_zero() const throw() { return ( code == 0 ); }
+  bool code_is_zero() const { return ( code == 0 ); }
   bool finished() { return pos >= stream_pos && !read_block(); }
-  long long member_position() const throw()
+  long long member_position() const
     { return partial_member_pos + pos; }
-  void reset_member_position() throw()
+  void reset_member_position()
     { partial_member_pos = -pos; }
 
   uint8_t get_byte()
@@ -176,7 +176,7 @@ class Literal_decoder
   {
   Bit_model bm_literal[1<<literal_context_bits][0x300];
 
-  int lstate( const int prev_byte ) const throw()
+  int lstate( const int prev_byte ) const
     { return ( prev_byte >> ( 8 - literal_context_bits ) ); }
 
 public:
@@ -206,13 +206,13 @@ class LZ_decoder
   void flush_data();
   bool verify_trailer() const;
 
-  uint8_t get_prev_byte() const throw()
+  uint8_t get_prev_byte() const
     {
     const int i = ( ( pos > 0 ) ? pos : buffer_size ) - 1;
     return buffer[i];
     }
 
-  uint8_t get_byte( const int distance ) const throw()
+  uint8_t get_byte( const int distance ) const
     {
     int i = pos - distance - 1;
     if( i < 0 ) i += buffer_size;
@@ -259,9 +259,9 @@ public:
 
   ~LZ_decoder() { delete[] buffer; }
 
-  uint32_t crc() const throw() { return crc_ ^ 0xFFFFFFFFU; }
+  uint32_t crc() const { return crc_ ^ 0xFFFFFFFFU; }
 
-  long long data_position() const throw()
+  long long data_position() const
     { return partial_data_pos + pos; }
 
   int decode_member();

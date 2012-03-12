@@ -34,7 +34,7 @@ const CRC32 crc32;
 // Returns the number of bytes really read.
 // If (returned value < size) and (errno == 0), means EOF was reached.
 //
-int readblock( const int fd, uint8_t * const buf, const int size ) throw()
+int readblock( const int fd, uint8_t * const buf, const int size )
   {
   int rest = size;
   errno = 0;
@@ -53,7 +53,7 @@ int readblock( const int fd, uint8_t * const buf, const int size ) throw()
 // Returns the number of bytes really written.
 // If (returned value < size), it is always an error.
 //
-int writeblock( const int fd, const uint8_t * const buf, const int size ) throw()
+int writeblock( const int fd, const uint8_t * const buf, const int size )
   {
   int rest = size;
   errno = 0;
@@ -73,7 +73,7 @@ bool Range_decoder::read_block()
   if( !at_stream_end )
     {
     stream_pos = readblock( infd, buffer, buffer_size );
-    if( stream_pos != buffer_size && errno ) throw Error( "Read error" );
+    if( stream_pos != buffer_size && errno ) exit(-1);
     at_stream_end = ( stream_pos < buffer_size );
     partial_member_pos += pos;
     pos = 0;
@@ -90,7 +90,7 @@ void LZ_decoder::flush_data()
     crc32.update( crc_, buffer + stream_pos, size );
     if( outfd >= 0 &&
         writeblock( outfd, buffer + stream_pos, size ) != size )
-      throw Error( "Write error" );
+      exit(-1);
     if( pos >= buffer_size ) { partial_data_pos += pos; pos = 0; }
     stream_pos = pos;
     }

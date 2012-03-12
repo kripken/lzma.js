@@ -5,8 +5,6 @@ make clean
 DECODER_ONLY=0 make lzip -j 4 # native build
 mv lzip ../lzma-native
 
-exit
-
 echo "bitcode full (encoder+decoder)"
 make clean
 DECODER_ONLY=0 ~/Dev/emscripten/emmake make lzip -j 4

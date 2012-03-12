@@ -116,7 +116,7 @@ void Fmatchfinder::move_pos()
   }
 
 
-int Fmatchfinder::longest_match_len( int * const distance ) throw()
+int Fmatchfinder::longest_match_len( int * const distance )
   {
   int len_limit = match_len_limit_;
   if( len_limit > available_bytes() )
@@ -166,7 +166,7 @@ int Fmatchfinder::longest_match_len( int * const distance ) throw()
   }
 
 
-void Fmatchfinder::longest_match_len() throw()
+void Fmatchfinder::longest_match_len()
   {
   int len_limit = match_len_limit_;
   if( len_limit > available_bytes() )

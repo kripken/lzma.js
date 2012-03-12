@@ -17,7 +17,10 @@ function assertNeq(a, b) {
 }
 
 function byteCompare(a, b) {
-  assertEq(JSON.stringify(new Uint8Array(a)), JSON.stringify(new Uint8Array(b)));
+  assertEq(a.length, b.length);
+  for (var i = 0; i < a.length; i++) {
+    assertEq(a[i]&255, b[i]&255);
+  }
 }
 
 function testSimple() {
@@ -47,7 +50,7 @@ function testBig() {
     return last;
   }
   print('           ..generating data..');
-  var size = 1024*1024;
+  var size = 1*1024*1024;
   var data = new Array(size);
   for (var i = 0; i < size; i++) {
     data[i] = fakeRandom();

@@ -1,3 +1,5 @@
+#if !DECODER_ONLY
+
 /*  Lzip - Data compressor based on the LZMA algorithm
     Copyright (C) 2008, 2009, 2010, 2011 Antonio Diaz Diaz.
 
@@ -373,3 +375,6 @@ bool FLZ_encoder::encode_member( const long long member_size )
       }
     }
   }
+
+#endif
+

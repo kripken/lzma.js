@@ -52,8 +52,11 @@
 
 #include "lzip.h"
 #include "decoder.h"
+
+#if !DECODER_ONLY
 #include "encoder.h"
 #include "fast_encoder.h"
+#endif
 
 #if CHAR_BIT != 8
 #error "Environments where CHAR_BIT != 8 are not supported."
@@ -227,6 +230,7 @@ bool next_filename()
   return false;
 }
 
+#if !DECODER_ONLY
 int compress( const long long member_size, const long long volume_size,
               const Lzma_options & encoder_options, const int infd,
               const struct stat * const in_statsp )
@@ -355,7 +359,7 @@ int fcompress( const long long member_size, const long long volume_size,
   catch( Error e ) { pp(); show_error( e.msg, errno ); retval = 1; }
   return retval;
 }
-
+#endif
 
 int decompress( const int infd, const bool testing )
 {
@@ -520,11 +524,13 @@ int main( const int argc, const char * const argv[] )
 
   if( program_mode == m_test )
     outfd = -1;
+#if !DECODER_ONLY
   else if( program_mode == m_compress )
   {
     dis_slots.init();
     prob_prices.init();
   }
+#endif
 
   int retval = 0;
   {
@@ -538,6 +544,7 @@ int main( const int argc, const char * const argv[] )
     const struct stat * const in_statsp = 0;
     //pp.set_name( "-" );
     int tmp = 0;
+#if !DECODER_ONLY
     if( program_mode == m_compress )
     {
       if( zero )
@@ -547,6 +554,7 @@ int main( const int argc, const char * const argv[] )
                         in_statsp );
     }
     else
+#endif
       tmp = decompress( infd, program_mode == m_test );
     if( tmp > retval ) retval = tmp;
     //if( tmp && program_mode != m_test ) cleanup_and_fail( retval );

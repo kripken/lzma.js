@@ -16,7 +16,7 @@ datadir = $(prefix)/share
 infodir = $(datadir)/info
 mandir = $(datadir)/man
 sysconfdir = $(prefix)/etc
-CPPFLAGS = 
+CPPFLAGS = -DDECODER_ONLY=$(DECODER_ONLY)
 CXXFLAGS = -Wall -W -O2
 LDFLAGS = 
 
@@ -36,7 +36,7 @@ unzobjs = unzcrash.o
          uninstall uninstall-info uninstall-man \
          doc info man check dist clean distclean
 
-all : $(progname) lziprecover
+all : $(progname)
 
 $(progname) : $(objs)
 	$(CXX) $(LDFLAGS) -o $@ $(objs)

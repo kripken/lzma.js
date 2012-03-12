@@ -1,18 +1,33 @@
 cd lzip
 
-make clean
-make lzip -j 2 # native build
-mv lzip ../lzma-native
-
+#echo "native"
 #make clean
-#~/Dev/emscripten/emmake make lzip -j 2 # bitcode build
-#mv lzip lzip.bc
- 
-#cd ..
+#DECODER_ONLY=0 make lzip -j 2 # native build
+#mv lzip ../lzma-native
 
-#~/Dev/emscripten/emcc -O2 lzip/lzip.bc -o lzma.raw.js
-## -s INLINING_LIMIT=0
-#cat pre.js > lzma.js
-#cat lzma.raw.js >> lzma.js
-#cat post.js >> lzma.js
+echo "bitcode full (encoder+decoder)"
+make clean
+DECODER_ONLY=0 ~/Dev/emscripten/emmake make lzip -j 2
+mv lzip lzip-full.bc
+
+echo "bitcode decoder only"
+make clean
+DECODER_ONLY=1 ~/Dev/emscripten/emmake make lzip -j 2
+mv lzip lzip-decoder.bc
+ 
+cd ..
+
+echo "javascript full"
+~/Dev/emscripten/emcc -O2 lzip/lzip-full.bc -o lzma-full.raw.js
+# -s INLINING_LIMIT=0
+cat pre.js > lzma-full.js
+cat lzma-full.raw.js >> lzma-full.js
+cat post.js >> lzma-full.js
+
+echo "javascript decoder"
+~/Dev/emscripten/emcc -O2 lzip/lzip-decoder.bc -o lzma-decoder.raw.js
+# -s INLINING_LIMIT=0
+cat pre.js > lzma-decoder.js
+cat lzma-decoder.raw.js >> lzma-decoder.js
+cat post.js >> lzma-decoder.js
 

@@ -1,4 +1,4 @@
-// js -m -n -e "load('lzma.js')" test.js
+// js -m -n -e "load('lzma-full.js')" test-full.js
 
 function assertEq(a, b) {
   if (a !== b) {

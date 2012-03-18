@@ -1,5 +1,5 @@
 
-    return returnValue;
+    return new Uint8Array(returnValue);
   },
 
   compress: function(data) {
